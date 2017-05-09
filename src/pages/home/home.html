@@ -46,7 +46,15 @@
 		  <ion-col text-center>
       <ion-icon name="water"></ion-icon>
       <p ion-text>{{weatherInfo.humid}}<span>%</span></p>
-      <p>WIND</p>
+      <p>HUM</p>
+    </ion-col>
+  </ion-row>
+
+  <ion-row class="weather_five">
+    <ion-col text-center *ngFor="let day of fiveDays">
+      <p>{{day.dt_txt | date:'EEE' | uppercase }}</p>
+      <ion-icon name="{{mapWeatherIcon(day.weather[0].main)}}"></ion-icon>
+      <p>{{day.main.temp | tempTo:'C'}}<span>&deg;C</span></p>
     </ion-col>
   </ion-row>
 </ion-content>

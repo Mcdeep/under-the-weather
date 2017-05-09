@@ -1,9 +1,11 @@
-import {Component} from '@angular/core';
-import {NavController} from 'ionic-angular';
+import { Component } from '@angular/core';
+import { NavController } from 'ionic-angular';
+import { Geoposition } from '@ionic-native/geolocation';
+// Services ...
+import { WeatherService } from '../../providers/weather-service';
+import { LocationService } from '../../providers/location-service';
+import { Config } from '../../providers/config';
 
-//Weather Service ...
-import {WeatherService} from '../../providers/weather-service';
-import {Config} from '../../providers/config'
 
 @Component({selector: 'page-home', templateUrl: 'home.html'})
 export class HomePage {
@@ -26,8 +28,10 @@ export class HomePage {
     wind: string
   }
 
+  fiveDays = [];
+
   //Initialize Screen
-  constructor(public navCtrl : NavController, public wsService : WeatherService) {
+  constructor(public navCtrl : NavController, public wsService : WeatherService, public lcService: LocationService) {
     this.app_name = Config.app_name;
     this.day = new Date();
     this.location = {
@@ -38,22 +42,65 @@ export class HomePage {
     this.weatherInfo = {
       curTemp: '', minTemp: '', main: '', mainDesc: '', maxTemp: '', humid:'', wind:''
     };
-    this.getWeatherInformation();
+    
+    //Subcribe to updates of the coordinates
+    this.lcService.coords.subscribe((coords:Geoposition) => {
+      if(coords){
+        this.getWeatherInformationCoords(coords.coords.latitude.toString(), coords.coords.longitude.toString());
+        this.getWeatherFiveDaysForcast(coords.coords.latitude.toString(), coords.coords.longitude.toString());
+      }
+    })
+    this.lcService.startTracking();
   }
-
 
   /**
    * Get Current Weather Information
    */
-  getWeatherInformation() {
+  getWeatherInformationCoords(lat: string, lon: string) {
     this.wsService
-      .fetchWeatherByGeoLocation("-25.7313", "28.2184")
+      .fetchWeatherByGeoLocation(lat,lon)
       .subscribe(res => {
         //Successful Set weather information and Query Country Details
         this.setWeatherInformation(res);
       }, error => {
         //Error 
       });
+  }
+
+  /**
+   * Get Five Days Forcast
+   */
+  getWeatherFiveDaysForcast(lat: string, lon: string) {
+    this.wsService
+      .fetchFiveDayWeatherForcast(lat,lon)
+      .subscribe(res => {
+        //Successful Set weather information and Query Country Details
+        if(res.cod == 200){
+          this.setFiveDayForcast(res.list)
+        }
+      }, error => {
+        //Error 
+      });
+  }
+
+
+  /** 
+   * Set Five Days Forcast Weather Data
+   *  */
+  setFiveDayForcast(forcastData){
+    this.fiveDays = [];
+
+    let currentDay = this.day.getFullYear().toString() + "-" + ((this.day.getMonth() < 10) ? "0":"") + (this.day.getMonth() + 1).toString() + "-" + ((this.day.getDate() < 10) ? "0":"") + this.day.getDate().toString() ;
+
+    console.log(currentDay)
+    //load Forcast Data excluding dates alreay added
+    forcastData.forEach(dayForcast => {
+      let day = dayForcast['dt_txt'].split(" ")[0];
+      if(currentDay !== day){
+        this.fiveDays.push(dayForcast);
+        currentDay = day;
+      }
+    });
   }
 
   /**
@@ -78,12 +125,11 @@ export class HomePage {
 
     //Fetch Country Code
     this.wsService.fetchCountryByCode(this.location.code).subscribe((country) => {
-      this.location.country = country.name;
+        this.location.country = country.name;
     }, err => {
       //Handle Error;
-    })
+    });
   }
-
 
   //Maps Weather condition to Ionic Icons Whick will default to sunny
   mapWeatherIcon(mainWeather: string): string{

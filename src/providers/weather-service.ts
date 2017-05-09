@@ -25,6 +25,11 @@ export class WeatherService {
 		return this.fetchData(this.buildURI('GEO', info));
 	}
 
+	fetchFiveDayWeatherForcast(lat: string,lon: string){
+		let info = `lat=${lat}&lon=${lon}`;
+		return this.fetchData(this.buildURI('FOR', info));
+	}
+
 	//Fetch Country Details by Code EG ZA
 	fetchCountryByCode(countryCode: string){
 		let country_uri = Config.country_api_uri + countryCode;
@@ -35,22 +40,21 @@ export class WeatherService {
 		return this.http.get(url).map(res => res.json())
 	}
 
-	getDeviceGeoLocation(){
-
-	}
-
 	/*Method will default to Geo Location*/
 	buildURI(type: string, info) : string{
 		let uri = Config.weather_api_uri;
 		switch(type){
 			case 'CITY':
-			 	uri += '?q='
+			 	uri += 'weather?q='
 				break;
 			case 'CID':
-			 	uri += '?id='
+			 	uri += 'weather?id='
+				break;
+			case 'FOR':
+			 	uri += 'forecast?'
 				break;
 			 default:
-				uri += '?'
+				uri += 'weather?'
 		}
 		//Setting Weather Application Key and return url
 		return uri += info + `&appid=${Config.weather_api_key}`;
