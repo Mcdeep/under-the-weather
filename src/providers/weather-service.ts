@@ -25,6 +25,12 @@ export class WeatherService {
 		return this.fetchData(this.buildURI('GEO', info));
 	}
 
+	//Fetch Country Details by Code EG ZA
+	fetchCountryByCode(countryCode: string){
+		let country_uri = Config.country_api_uri + countryCode;
+		return this.fetchData(country_uri);
+	}
+
 	fetchData(url:string){
 		return this.http.get(url).map(res => res.json())
 	}

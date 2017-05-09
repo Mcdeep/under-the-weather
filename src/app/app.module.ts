@@ -10,10 +10,13 @@ import { MyApp } from './app.component';
 import { WeatherService } from '../providers/weather-service';
 import { HomePage } from '../pages/home/home';
 
+import {TempToPipe} from '../providers/units-filter';
+
 @NgModule({
   declarations: [
     MyApp,
-    HomePage
+    HomePage,
+    TempToPipe
   ],
   imports: [
     BrowserModule,

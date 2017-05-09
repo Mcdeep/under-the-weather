@@ -24,12 +24,19 @@ $font-path: "../assets/fonts";
 // The "primary" color is the only required color in the map.
 
 $colors: (
-  primary:    #488aff,
+  primary:    white,
   secondary:  #32db64,
   danger:     #f53d3d,
   light:      #f4f4f4,
   dark:       #222
 );
+
+
+.content{
+background: #56CCF2 !important;  /* fallback for old browsers */
+background: -webkit-linear-gradient(to top, #2F80ED, #56CCF2) !important; ;  /* Chrome 10-25, Safari 5.1-6 */
+background: linear-gradient(to top, #2F80ED, #56CCF2) !important; ; /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+}
 
 
 // App iOS Variables
