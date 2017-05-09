@@ -1,47 +1,74 @@
 page-home {
-  
-  h1{
-    margin-top: 2rem;
+  .app_name {
+    font-weight: 200;
+    color: #206bb9;
+    padding-bottom: 13px;
+    border-bottom: 1px solid #a6d3e8;
+  }
+  h1 {
     text-shadow: 1px 1px 1px grey;
   }
-
-  .weather_view{
+  .weather_view {
     color: white;
     background: #88c0fb;
     border-radius: 50%;
     height: 23rem;
     width: 23rem;
     text-shadow: 1px 1px 1px grey;
-
-    .weather_icon{
+    .weather_icon {
       font-size: 5.2em;
       color: white;
       padding: 1.2rem;
     }
-
-    .date{
-      border-top:1px solid white;
-      margin:0;
+    .date {
+      border-top: 1px solid white;
+      padding-top: 5px;
+      margin: 0;
     }
-
-    .weather_icon-current{
+    .weather_icon-current {
       font-size: 4em;
       margin: 0;
-      span{
+      span {
         font-size: 0.5em;
       }
     }
   }
-
-  .weather_desc{
+  .weather_week-head {
+    text-transform: uppercase;
+    margin: 0;
+    margin-top: 17px;
+    font-weight: bold;
+    opacity: .4;
+  }
+  .weather_desc {
     color: #2a476d;
     font-size: large;
     text-shadow: 1px -1px 6px #e2f2ff;
     text-transform: uppercase;
   }
-
-  .weather_details{
+  .weather_details {
     color: #eff6fd;
     text-shadow: 1px 1px 1px grey;
+    .desc {
+      margin: 0;
+      margin-top: -10px;
+    }
+  }
+  .weather_five {
+    margin-top: 5px;
+    ion-col {
+      background: #88c0fb;
+      border-radius: .2em;
+      margin-left: 2px;
+      p:first-child {
+        margin-top: 5px;
+        font-weight: bold;
+        opacity: .6;
+      }
+      .desc {
+        margin: 0;
+        margin-bottom: 5px;
+      }
+    }
   }
 }

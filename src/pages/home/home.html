@@ -1,60 +1,63 @@
 <ion-content padding>
-  <ion-row>
-    <ion-col align-self-center>
-      <h1 ion-text text-center color="primary" style="margin-top: 14%">{{location.city | uppercase}}</h1>
-      <p text-center>{{location.country}}</p>
-    </ion-col>
-  </ion-row>
-  <ion-row justify-content-center>
-    <ion-row class="weather_view">
-      <ion-col>
-        <ion-row>
-          <ion-col text-center>
-            <ion-icon class="weather_icon" name="{{weatherInfo.main}}"></ion-icon>
-            <p ion-text text-center class="date">TODAY, {{ day | date:'dd MMMM yyyy' | uppercase}}</p>
-          </ion-col>
-        </ion-row>
-        <ion-row>
-          <ion-col>
-            <p ion-text text-center class="weather_icon-current">{{weatherInfo.curTemp | tempTo:'C'}}<span>&deg;C</span></p>
-          </ion-col>
-        </ion-row>
+  <h2 text-center class="app_name">{{app_name | uppercase}}</h2>
+  <div *ngIf="loaded">
+    <ion-row>
+      <ion-col align-self-center>
+        <h1 ion-text text-center color="primary">{{location.city | uppercase}}</h1>
+        <p text-center>{{location.country}}</p>
       </ion-col>
     </ion-row>
-  </ion-row>
-  <ion-row justify-content-center>
-    <ion-col>
-      <p ion-text text-center class="weather_desc">{{weatherInfo.mainDesc}}</p>
-    </ion-col>
-  </ion-row>
-  <ion-row class="weather_details" justify-content-space-between>
-    <ion-col text-center>
-      <ion-icon name="thermometer"></ion-icon>
-      <p ion-text text-center>{{weatherInfo.maxTemp | tempTo:'C'}}<span>&deg;C</span></p>
-      <p>MAX</p>
-    </ion-col>
-    <ion-col text-center>
-      <ion-icon name="thermometer"></ion-icon>
-      <p ion-text>{{weatherInfo.minTemp | tempTo:'C'}}<span>&deg;C</span></p>
-      <p>MIN</p>
-    </ion-col>
-    <ion-col text-center>
-      <ion-icon name="speedometer"></ion-icon>
-      <p ion-text>{{weatherInfo.wind}}<span> KM</span></p>
-      <p>WIND</p>
-    </ion-col>
-		  <ion-col text-center>
-      <ion-icon name="water"></ion-icon>
-      <p ion-text>{{weatherInfo.humid}}<span>%</span></p>
-      <p>HUM</p>
-    </ion-col>
-  </ion-row>
-
+    <ion-row justify-content-center>
+      <ion-row class="weather_view">
+        <ion-col>
+          <ion-row>
+            <ion-col text-center>
+              <ion-icon class="weather_icon" name="{{weatherInfo.main}}"></ion-icon>
+              <p ion-text text-center class="date">TODAY, {{ day | date:'dd MMMM yyyy' | uppercase}}</p>
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col>
+              <p ion-text text-center class="weather_icon-current">{{weatherInfo.curTemp | tempTo:'C'}}<span>&deg;C</span></p>
+            </ion-col>
+          </ion-row>
+        </ion-col>
+      </ion-row>
+    </ion-row>
+    <ion-row justify-content-center>
+      <ion-col>
+        <p ion-text text-center class="weather_desc">{{weatherInfo.mainDesc}}</p>
+      </ion-col>
+    </ion-row>
+    <ion-row class="weather_details" justify-content-space-between>
+      <ion-col text-center>
+        <ion-icon name="thermometer"></ion-icon>
+        <p ion-text text-center>{{weatherInfo.maxTemp | tempTo:'C'}}<span>&deg;C</span></p>
+        <p class="desc">MAX</p>
+      </ion-col>
+      <ion-col text-center>
+        <ion-icon name="thermometer"></ion-icon>
+        <p ion-text>{{weatherInfo.minTemp | tempTo:'C'}}<span>&deg;C</span></p>
+        <p class="desc">MIN</p>
+      </ion-col>
+      <ion-col text-center>
+        <ion-icon name="speedometer"></ion-icon>
+        <p ion-text>{{weatherInfo.wind}}<span> KM</span></p>
+        <p class="desc">WIND</p>
+      </ion-col>
+      <ion-col text-center>
+        <ion-icon name="water"></ion-icon>
+        <p ion-text>{{weatherInfo.humid}}<span>%</span></p>
+        <p class="desc">HUM</p>
+      </ion-col>
+    </ion-row>
+    <p class="weather_week-head" text-center>Predicted forcast at {{ day | date:'H:m'}} </p>
+  </div>
   <ion-row class="weather_five">
     <ion-col text-center *ngFor="let day of fiveDays">
       <p>{{day.dt_txt | date:'EEE' | uppercase }}</p>
       <ion-icon name="{{mapWeatherIcon(day.weather[0].main)}}"></ion-icon>
-      <p>{{day.main.temp | tempTo:'C'}}<span>&deg;C</span></p>
+      <p class="desc">{{day.main.temp | tempTo:'C'}}<span>&deg;C</span></p>
     </ion-col>
   </ion-row>
 </ion-content>
