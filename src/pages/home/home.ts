@@ -59,7 +59,7 @@ export class HomePage {
 
   ionViewDidLoad(){
       this.loader = this.loadingCtrl.create({
-        spinner: `bubbles`,
+        spinner:'hide',
         content: this.loadingMessage
       });
 
