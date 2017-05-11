@@ -14,20 +14,26 @@ export class LocationService {
 		public watch : any;
 		public coords: BehaviorSubject<Geoposition> =  new BehaviorSubject(null);
 		options = {
-					frequency: 3000, 
+					timeout: 5000,
+					frequency: 5000, 
 					enableHighAccuracy: true
 		};
 
 		constructor(public zone : NgZone, public geolocation : Geolocation) {}
 
+		//One Time Location
+		getCurrentLocationCoords(){
+			return this.geolocation.getCurrentPosition(this.options);
+		}
 		//Track device Location
 		startTracking() {
-				console.log('Watching ')
-				this.watch = this.geolocation.watchPosition(this.options).filter((p: any) => p.code === undefined).subscribe((position: Geoposition) => {
+				this.watch = this.geolocation.watchPosition(this.options).subscribe((position) => {
 					// Run update inside of Angular's zone
-					this.zone.run(() => {
-						this.coords.next(position);
-					});
+					console.log(JSON.stringify(position))
+					this.coords.next(position);
+				}, err => {
+					console.log('Error Loading')
+					console.log('sssss',err)
 				});
 		}
 

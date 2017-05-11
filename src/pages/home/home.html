@@ -3,7 +3,7 @@
   <div *ngIf="loaded">
     <ion-row>
       <ion-col align-self-center>
-        <h1 ion-text text-center color="primary">{{location.city | uppercase}}</h1>
+        <h1 ion-text text-center color="light">{{location.city | uppercase}}</h1>
         <p text-center>{{location.country}}</p>
       </ion-col>
     </ion-row>
@@ -51,7 +51,7 @@
         <p class="desc">HUM</p>
       </ion-col>
     </ion-row>
-    <p class="weather_week-head" text-center>Predicted forcast at {{ day | date:'H:mm'}} </p>
+    <p class="weather_week-head" text-center>Predicted forcast around {{ day | date:'H:mm'}} </p>
   </div>
   <ion-row class="weather_five">
     <ion-col text-center *ngFor="let day of fiveDays">
