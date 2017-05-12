@@ -30,6 +30,11 @@ export class WeatherService {
 		return this.fetchData(this.buildURI('FOR', info));
 	}
 
+	fetchFiveDayWeatherForcastByCity(city:string){
+		return this.fetchData(this.buildURI('FORCITY', city));
+	}
+
+
 	//Fetch Country Details by Code EG ZA
 	fetchCountryByCode(countryCode: string){
 		let country_uri = Config.country_api_uri + countryCode;
@@ -52,6 +57,9 @@ export class WeatherService {
 				break;
 			case 'FOR':
 			 	uri += 'forecast?'
+				break;
+			case 'FORCITY':
+				uri += 'forecast?q='
 				break;
 			 default:
 				uri += 'weather?'

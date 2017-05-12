@@ -8,6 +8,20 @@ page-home {
   h1 {
     text-shadow: 1px 1px 1px grey;
   }
+
+  .search_icon{
+    position: absolute;
+    right: 10px;
+    top: 15%;
+    font-size: x-large;
+    color: #eaf8ff;
+    border: 1px solid #8ed3f7;
+    text-align: center;
+    border-radius: 50%;
+    width: 33px;
+    height: 33px;
+    line-height: 33px;
+  }
   .weather_view {
     color: white;
     background: #88c0fb;

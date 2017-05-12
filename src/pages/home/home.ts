@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { NavController, AlertController, LoadingController } from 'ionic-angular';
+import { NavController, AlertController, LoadingController,Platform } from 'ionic-angular';
 
 // Services ...
 import { WeatherService } from '../../providers/weather-service';
@@ -21,7 +21,6 @@ export class HomePage {
 	};
 
 	loader : any;
-	loadingMessage: string = 'Fetching location and weather forecast...';
 
 	weatherInfo:{
 		curTemp: string,
@@ -41,7 +40,8 @@ export class HomePage {
 		public wsService : WeatherService, 
 		public lcService: LocationService, 
 		public loadingCtrl: LoadingController,
-		private alertCtrl: AlertController) {
+		private alertCtrl: AlertController,
+		private plartform: Platform) {
 		this.app_name = Config.app_name;
 		this.day = new Date();
 		this.location = {
@@ -56,29 +56,59 @@ export class HomePage {
 		};   
 	}
 
-	ionViewDidLoad(){
-		this.loader = this.loadingCtrl.create({
+	/**
+	 * Show Loading
+	*/
+	showLoading (message: string){
+		this.loader = this.loadingCtrl.create( {
 			spinner:'crescent',
-			content: this.loadingMessage
+			content: message
 		});
-
 		this.loader.present();
-		 //Subcribe to updates of the coordinates
+	}
 
-		 this.lcService.getCurrentLocationCoords().then( ({coords}) => {
+	showErrorMessage (message: string){
+		let alert = this.alertCtrl.create({
+			title: 'Connection Error',
+			subTitle: message,
+			enableBackdropDismiss: false,
+			buttons: [
+				{
+					text: 'Try again',
+					handler: () => {
+						this.searchCity()	
+					}
+				}
+				,{
+					text: 'Quit',
+					handler: () => {
+						this.plartform.exitApp()	
+					}
+				}]
+		});
+		this.loader.dismiss();
+		alert.present();
+	}
+
+	ionViewDidLoad(){
+		 //Subcribe to updates of the coordinates
+		this.showLoading("Fetching location and weather forecast...");
+
+		this.lcService.getCurrentLocationCoords().then( ({coords}) => {
 			 this.getWeatherInformationCoords(coords.latitude.toString(), coords.longitude.toString());
 			 this.getWeatherFiveDaysForcast(coords.latitude.toString(), coords.longitude.toString());
 		 }).catch(err => {
 			 this.loader.dismiss()
 			 let alert = this.alertCtrl.create({
 					title: 'Location error',
-					subTitle: err.message + ', Try again',
+					subTitle: 'Failed to get your location',
+					enableBackdropDismiss:false,
 					buttons: [
 						{
-							text: 'City Name',
+							text: 'Enter city name',
 							handler: () => {
 								let cityAlert = this.alertCtrl.create({
-									title: 'Try with City Name',
+									title: 'Search by city name',
 									inputs:[{
 										name: 'city',
 										placeholder:'Enter City',
@@ -92,44 +122,25 @@ export class HomePage {
 								})
 								cityAlert.present();	
 							}
+						},
+						{
+							text: 'Quit',
+							handler: () => {
+								this.plartform.exitApp()	
+							}
 						}	
 					]
 				});
 			alert.present();
 		 })
 
-		//  this.lcService.coords.subscribe((coords:Geoposition) => {
-		
-		//   if(coords && coords.coords){
-		//     this.getWeatherInformationCoords(coords.coords.latitude.toString(), coords.coords.longitude.toString());
-		//     this.getWeatherFiveDaysForcast(coords.coords.latitude.toString(), coords.coords.longitude.toString());
-		//   }else{
-		//     let alert = this.alertCtrl.create({
-		//       title: 'Location error',
-		//       subTitle: 'F',
-		//       buttons: ['OK']
-		//     });
-		//   }
-		// }, err =>{
-		//   let alert = this.alertCtrl.create({
-		//     title: 'Location error',
-		//     subTitle: 'Failed to get Location',
-		//     buttons: ['OK']
-		//   });
-		//   alert.present();
-		// })
-		//this.lcService.startTracking();
 	}
-
-
-
 
 	/**
 	 * Get Current Weather Information
 	 */
 	getWeatherInformationCoords(lat: string, lon: string) {
 		 this.loading = true;
-		
 		 this.wsService
 			.fetchWeatherByGeoLocation(lat,lon)
 			.subscribe(res => {
@@ -137,12 +148,7 @@ export class HomePage {
 				this.setWeatherInformation(res);
 			}, error => {
 				//Error 
-				let alert = this.alertCtrl.create({
-					title: 'Connection Error',
-					subTitle: 'Failed to retrieve weather forcast',
-					buttons: ['OK']
-				});
-				alert.present();
+				this.showErrorMessage("Failed to find city by coordinates");
 			});
 	}
 
@@ -150,21 +156,17 @@ export class HomePage {
 	 * Get Current Weather Information Using City
 	 */
 	getWeatherInformationCity(city:string) {
+		this.showLoading("Fetching Location by City");
 		 this.loading = true;
 		 this.wsService
 			.fetchWeatherByCity(city)
 			.subscribe(res => {
 				//Successful Set weather information and Query Country Details
-			
 				this.setWeatherInformation(res);
+				this.getWeatherFiveDaysForcastByCity(city);
 			}, error => {
 				//Error 
-				let alert = this.alertCtrl.create({
-					title: 'Connection Error',
-					subTitle: 'Failed to retrieve weather forcast',
-					buttons: ['OK']
-				});
-				alert.present();
+				this.showErrorMessage("Could not find the City");
 			});
 	}
 
@@ -181,14 +183,27 @@ export class HomePage {
 				}
 			}, error => {
 				//Error 
-				let alert = this.alertCtrl.create({
-					title: 'Connection Error',
-					subTitle: 'Failed to retrieve weather forcast',
-					buttons: ['OK']
-				});
-				alert.present();
+				this.showErrorMessage("Failed to get five day forecast");
 			});
 	}
+	/**
+	 * Get Five Days Forcast
+	 */
+	getWeatherFiveDaysForcastByCity(city: string) {
+		this.wsService
+			.fetchFiveDayWeatherForcastByCity(city)
+			.subscribe(res => {
+				//Successful Set weather information and Query Country Details
+				if(res.cod == 200){
+					this.setFiveDayForcast(res.list)
+				}
+			}, error => {
+				//Error 
+				this.showErrorMessage("Failed to get five day forecast");
+			});
+	}
+
+
 
 
 	/** 
@@ -196,7 +211,6 @@ export class HomePage {
 	 *  */
 	setFiveDayForcast(forcastData){
 		this.fiveDays = [];
-
 		let currentDay = this.day.getFullYear().toString() + "-" + ((this.day.getMonth() < 10) ? "0":"") + (this.day.getMonth() + 1).toString() + "-" + ((this.day.getDate() < 10) ? "0":"") + this.day.getDate().toString() ;
 		//load Forcast Data excluding dates alreay added
 		forcastData.forEach(dayForcast => {
@@ -229,22 +243,15 @@ export class HomePage {
 		}
 
 		this.loaded = true;
-		//this.loader.dismiss();
+		
 		//Fetch Country Code
-		this.loadingMessage = "Almost there...";
 		this.wsService.fetchCountryByCode(this.location.code).subscribe((country) => {
+				this.loader.dismiss();
 				this.location.country = country.name;
 		}, err => {
 			//Handle Error;
-			let alert = this.alertCtrl.create({
-					title: 'Location Error',
-					subTitle: 'Failed to retrieve location details',
-					buttons: ['OK']
-				});
-				alert.present();
+			this.showErrorMessage("Failed to get county by code");
 		});
-
-		
 	}
 
 	//Maps Weather condition to Ionic Icons Whick will default to sunny
@@ -276,5 +283,22 @@ export class HomePage {
 
 	retryFetch (){
 		this.ionViewDidLoad();
+	}
+
+	searchCity (){
+		let cityAlert = this.alertCtrl.create({
+			title: 'Search by city name',
+			inputs:[{
+				name: 'city',
+				placeholder:'Enter City',
+			}],
+			buttons: [{
+				text:'Search',
+				handler: data => {
+					this.getWeatherInformationCity(data.city);
+				}
+			}]
+		})
+		cityAlert.present();
 	}
 }

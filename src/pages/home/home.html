@@ -4,6 +4,7 @@
     <ion-row>
       <ion-col align-self-center>
         <h1 ion-text text-center color="light">{{location.city | uppercase}}</h1>
+        <ion-icon class="search_icon" (click)="searchCity()" name="search"></ion-icon>
         <p text-center>{{location.country}}</p>
       </ion-col>
     </ion-row>
